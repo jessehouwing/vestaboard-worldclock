@@ -1,9 +1,8 @@
 """World Clock plugin for FiestaBoard.
 
-Shows 3 to 6 named clocks, one per board row::
+Shows a single named clock (add several plugin instances for more)::
 
     Home             12:15 PM{yellow}
-    Papa              4:15 AM{black}
 
 A yellow tile means daytime (06:00-17:59 local), a black tile means night.
 """
@@ -11,7 +10,7 @@ A yellow tile means daytime (06:00-17:59 local), a black tile means night.
 import logging
 import re
 from datetime import datetime, timedelta, timezone as dt_timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 import pytz
 
@@ -22,8 +21,6 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BOARD = BoardContext.from_device_type("flagship")
 
-MIN_CLOCKS = 3
-MAX_CLOCKS = 6
 DAY_START = 6
 DAY_END = 18
 _OFFSET_RE = re.compile(r"(?:^|[\s(])(?:UTC|GMT)?\s*([+-])(\d{1,2})(?::?(\d{2}))?\)?$", re.IGNORECASE)
@@ -76,26 +73,15 @@ class WorldClockPlugin(PluginBase):
     def plugin_id(self) -> str:
         return "vestaboard_worldclock"
 
-    def _entries(self, config: Dict[str, Any]) -> List[Tuple[str, str]]:
-        entries = []
-        for i in range(1, MAX_CLOCKS + 1):
-            name = str(config.get(f"name_{i}") or "").strip()
-            tz = str(config.get(f"timezone_{i}") or "").strip()
-            if name or tz:
-                entries.append((name, tz))
-        return entries
-
     def validate_config(self, config: Dict[str, Any]) -> List[str]:
         errors = []
-        entries = self._entries(config)
-        if len(entries) < MIN_CLOCKS:
-            errors.append(f"At least {MIN_CLOCKS} clocks (name and timezone) are required.")
-        for name, tz in entries:
-            if not name:
-                errors.append(f"Missing name for timezone: {tz}")
-            if not tz:
-                errors.append(f"Missing timezone for: {name}")
-                continue
+        name = str(config.get("name") or "").strip()
+        tz = str(config.get("timezone") or "").strip()
+        if not name:
+            errors.append("A name is required.")
+        if not tz:
+            errors.append("A timezone is required.")
+        else:
             try:
                 resolve_timezone(tz)
             except ValueError:
@@ -108,19 +94,28 @@ class WorldClockPlugin(PluginBase):
         try:
             board = self.board or DEFAULT_BOARD
             time_format = self.config.get("time_format", "12h")
-            clocks = []
-            lines = []
-            for name, tz in self._entries(self.config):
-                now = datetime.now(resolve_timezone(tz))
-                time_str = format_time(now, time_format)
-                day = is_daytime(now.hour)
-                clocks.append({"name": name, "timezone": tz, "time": time_str, "day": day})
-                lines.append(render_line(name, time_str, day, board.cols))
-            lines = lines[: board.rows]
+            name = str(self.config.get("name") or "").strip()
+            tz = str(self.config.get("timezone") or "").strip()
+            now = datetime.now(resolve_timezone(tz))
+            time_str = format_time(now, time_format)
+            day = is_daytime(now.hour)
+            color = "{yellow}" if day else "{black}"
+            line = render_line(name, time_str, day, board.cols)
+            hour = now.hour % 12 or 12 if time_format != "24h" else now.hour
             return PluginResult(
                 available=True,
-                data={"world_clock": "\n".join(lines), "clocks": clocks},
-                formatted_lines=lines,
+                data={
+                    "world_clock": line,
+                    "label": name,
+                    "time": time_str.strip(),
+                    "color": color,
+                    "time_format": time_format,
+                    "hour": str(hour),
+                    "minute": f"{now.minute:02d}",
+                    "timezone": tz,
+                    "day": day,
+                },
+                formatted_lines=[line],
             )
         except Exception as e:
             logger.exception("Error fetching world clock data")
