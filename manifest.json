@@ -1,0 +1,125 @@
+{
+  "id": "world_clock",
+  "name": "World Clock",
+  "version": "1.0.0",
+  "description": "Shows the time in 3 to 6 timezones with a day/night indicator.",
+  "live_data": true,
+  "author": "Jesse Houwing",
+  "icon": "clock",
+  "category": "utility",
+  "repository": "https://github.com/jessehouwing/vestaboard-worldclock",
+  "documentation": "README.md",
+  "settings_schema": {
+    "type": "object",
+    "required": [
+      "name_1",
+      "timezone_1",
+      "name_2",
+      "timezone_2",
+      "name_3",
+      "timezone_3"
+    ],
+    "properties": {
+      "time_format": {
+        "type": "string",
+        "title": "Time Format",
+        "description": "12-hour or 24-hour display.",
+        "enum": [
+          "12h",
+          "24h"
+        ],
+        "default": "12h"
+      },
+      "name_1": {
+        "type": "string",
+        "title": "Name 1",
+        "description": "Label for clock 1. Required.",
+        "maxLength": 16
+      },
+      "timezone_1": {
+        "type": "string",
+        "title": "Timezone 1",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      },
+      "name_2": {
+        "type": "string",
+        "title": "Name 2",
+        "description": "Label for clock 2. Required.",
+        "maxLength": 16
+      },
+      "timezone_2": {
+        "type": "string",
+        "title": "Timezone 2",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      },
+      "name_3": {
+        "type": "string",
+        "title": "Name 3",
+        "description": "Label for clock 3. Required.",
+        "maxLength": 16
+      },
+      "timezone_3": {
+        "type": "string",
+        "title": "Timezone 3",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      },
+      "name_4": {
+        "type": "string",
+        "title": "Name 4",
+        "description": "Label for clock 4. Optional.",
+        "maxLength": 16
+      },
+      "timezone_4": {
+        "type": "string",
+        "title": "Timezone 4",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      },
+      "name_5": {
+        "type": "string",
+        "title": "Name 5",
+        "description": "Label for clock 5. Optional.",
+        "maxLength": 16
+      },
+      "timezone_5": {
+        "type": "string",
+        "title": "Timezone 5",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      },
+      "name_6": {
+        "type": "string",
+        "title": "Name 6",
+        "description": "Label for clock 6. Optional.",
+        "maxLength": 16
+      },
+      "timezone_6": {
+        "type": "string",
+        "title": "Timezone 6",
+        "description": "IANA name (Europe/Amsterdam), abbreviation (CET) or offset (UTC-8, Pacific -8).",
+        "default": ""
+      }
+    }
+  },
+  "variables": {
+    "groups": {
+      "display": {
+        "label": "Display"
+      }
+    },
+    "simple": {
+      "world_clock": {
+        "description": "Whole-board world clock, one line per clock",
+        "type": "string",
+        "max_length": 132,
+        "group": "display",
+        "example": "Home  🟨 12:15"
+      }
+    }
+  },
+  "fiestaboard_version": ">=2.10.0",
+  "teaser": "WORLD CLOCK"
+}
