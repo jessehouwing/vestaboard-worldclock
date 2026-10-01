@@ -13,11 +13,7 @@ from plugins import vestaboard_worldclock as wc
 
 MANIFEST = json.loads((Path(__file__).parent.parent / "manifest.json").read_text())
 
-CONFIG = {
-    "name_1": "Home", "timezone_1": "Europe/Amsterdam",
-    "name_2": "Papa", "timezone_2": "America/Los_Angeles",
-    "name_3": "Tokyo", "timezone_3": "Asia/Tokyo",
-}
+CONFIG = {"name": "Home", "timezone": "Europe/Amsterdam"}
 
 
 def make(config, board=None):
@@ -30,9 +26,8 @@ def make(config, board=None):
 
 def test_manifest_dropdowns():
     props = MANIFEST["settings_schema"]["properties"]
-    for i in range(1, 7):
-        assert "Europe/Amsterdam" in props[f"timezone_{i}"]["enum"]
-        assert "" in props[f"timezone_{i}"]["enum"]
+    assert "Europe/Amsterdam" in props["timezone"]["enum"]
+    assert "" in props["timezone"]["enum"]
     assert props["time_format"]["enum"] == ["12h", "24h"]
 
 
@@ -86,31 +81,36 @@ def test_render_line_tile_at_end_and_truncation():
 def test_validate_config():
     plugin = make(CONFIG)
     assert plugin.validate_config(CONFIG) == []
-    assert plugin.validate_config({}) 
-    assert plugin.validate_config({**CONFIG, "timezone_1": "Bogus/Zone"})
-    assert plugin.validate_config({**CONFIG, "name_1": ""})
-    assert plugin.validate_config({**CONFIG, "timezone_1": ""})
+    assert plugin.validate_config({})
+    assert plugin.validate_config({**CONFIG, "timezone": "Bogus/Zone"})
+    assert plugin.validate_config({**CONFIG, "name": ""})
+    assert plugin.validate_config({**CONFIG, "timezone": ""})
     assert plugin.validate_config({**CONFIG, "time_format": "13h"})
-    two = {k: v for k, v in CONFIG.items() if not k.endswith("_3")}
-    assert plugin.validate_config(two)
 
 
-def test_fetch_data_flagship_and_note():
-    cfg = {**CONFIG, "name_4": "Four", "timezone_4": "UTC", "name_5": "Five", "timezone_5": "UTC"}
-    result = make(cfg, "flagship").fetch_data()
-    assert result.available and len(result.formatted_lines) == 5
-    assert all(line.endswith(("{yellow}", "{black}")) for line in result.formatted_lines)
-    note = make(cfg, "note").fetch_data()
-    assert len(note.formatted_lines) == 3
-    assert result.data["world_clock"] == "\n".join(result.formatted_lines)
+def test_fetch_data_variables():
+    result = make(CONFIG, "flagship").fetch_data()
+    assert result.available and len(result.formatted_lines) == 1
+    d = result.data
+    assert d["label"] == "Home"
+    assert d["color"] in ("{yellow}", "{black}")
+    assert d["time_format"] == "12h"
+    assert d["time"].endswith(("AM", "PM"))
+    assert d["hour"] == str(int(d["hour"])) and len(d["minute"]) == 2
+    assert d["world_clock"] == result.formatted_lines[0]
+    assert set(MANIFEST["variables"]["simple"]) <= set(d)
 
 
-def test_fetch_data_default_board_and_formatted_display():
-    plugin = make(CONFIG)
-    assert len(plugin.get_formatted_display()) == 3
+def test_fetch_data_24h():
+    d = make({**CONFIG, "time_format": "24h"}).fetch_data().data
+    assert len(d["time"]) == 5 and ":" in d["time"]
+
+
+def test_formatted_display():
+    assert len(make(CONFIG).get_formatted_display()) == 1
 
 
 def test_fetch_data_error():
-    result = make({**CONFIG, "timezone_1": "Bogus/Zone"}).fetch_data()
+    result = make({**CONFIG, "timezone": "Bogus/Zone"}).fetch_data()
     assert not result.available and result.error
-    assert make({**CONFIG, "timezone_1": "Bogus/Zone"}).get_formatted_display() is None
+    assert make({**CONFIG, "timezone": "Bogus/Zone"}).get_formatted_display() is None
