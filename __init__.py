@@ -2,8 +2,8 @@
 
 Shows 3 to 6 named clocks, one per board row::
 
-    Home            {yellow} 12:15
-    Papa            {black}   4:15
+    Home             12:15 PM{yellow}
+    Papa              4:15 AM{black}
 
 A yellow tile means daytime (06:00-17:59 local), a black tile means night.
 """
@@ -26,9 +26,6 @@ MIN_CLOCKS = 3
 MAX_CLOCKS = 6
 DAY_START = 6
 DAY_END = 18
-TIME_WIDTH = 5  # "12:15"
-SUFFIX_WIDTH = TIME_WIDTH + 1  # tile + time field
-
 _OFFSET_RE = re.compile(r"(?:^|[\s(])(?:UTC|GMT)?\s*([+-])(\d{1,2})(?::?(\d{2}))?\)?$", re.IGNORECASE)
 
 
@@ -55,18 +52,21 @@ def is_daytime(hour: int) -> bool:
 
 
 def format_time(now: datetime, time_format: str) -> str:
+    """Fixed-width time so the colons line up on every row.
+
+    24h: ``04:15``; 12h: `` 4:15 PM``.
+    """
     if time_format == "24h":
         return now.strftime("%H:%M")
     hour = now.hour % 12 or 12
-    return f"{hour}:{now.minute:02d}"
+    return f"{hour:>2}:{now.minute:02d} {'AM' if now.hour < 12 else 'PM'}"
 
 
 def render_line(name: str, time_str: str, day: bool, cols: int) -> str:
-    """One row: name left, day/night tile and right-aligned time on the right."""
-    name_width = max(cols - SUFFIX_WIDTH, 0)
+    """One row: name left, fixed-width time, then the day/night tile at the end."""
     tile = "{yellow}" if day else "{black}"
-    name = name.upper()[:name_width]
-    return f"{name:<{name_width}}{tile} {time_str:>{TIME_WIDTH}}"
+    name_width = max(cols - len(time_str) - 2, 0)
+    return f"{name.upper()[:name_width]:<{name_width}} {time_str}{tile}"
 
 
 class WorldClockPlugin(PluginBase):

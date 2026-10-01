@@ -23,7 +23,7 @@
       "time_format": {
         "type": "string",
         "title": "Time Format",
-        "description": "12-hour or 24-hour display.",
+        "description": "12h shows AM/PM (e.g. 4:15 PM); 24h shows 16:15.",
         "enum": [
           "12h",
           "24h"
