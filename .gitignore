@@ -4,4 +4,4 @@ __pycache__/
 .coveragerc
 plugins/
 fiestaboard-core/
-world_clock
+vestaboard_worldclock

@@ -74,7 +74,7 @@ class WorldClockPlugin(PluginBase):
 
     @property
     def plugin_id(self) -> str:
-        return "world_clock"
+        return "vestaboard_worldclock"
 
     def _entries(self, config: Dict[str, Any]) -> List[Tuple[str, str]]:
         entries = []
