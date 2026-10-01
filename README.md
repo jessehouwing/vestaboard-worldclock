@@ -13,8 +13,7 @@ day/night tile (🟨 day 06:00-17:59, ⬛ night).
 Fill in `name_1`..`name_6` and `timezone_1`..`timezone_6` (the first three are required),
 plus `time_format` (`12h` default, or `24h`).
 
-Timezone accepts an IANA name (`Europe/Amsterdam`), an abbreviation (`CET`) or an
-offset (`UTC-8`, `Pacific -8`).
+Timezone is a dropdown of IANA zones (`Europe/Amsterdam`, `America/Los_Angeles`, ...). Leave empty for unused clocks.
 
 Boards with 3 rows (Note) show the first 3 clocks; 6-row boards show up to 6.
 Names are upper-cased and truncated to fit (board width minus 6 columns).
