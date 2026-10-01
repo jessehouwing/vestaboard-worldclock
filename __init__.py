@@ -1,6 +1,6 @@
 """World Clock plugin for FiestaBoard.
 
-Shows 3 to 6 named clocks, one per board row::
+Shows 1 to 6 named clocks, one per board row::
 
     Home             12:15 PM{yellow}
     Papa              4:15 AM{black}
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BOARD = BoardContext.from_device_type("flagship")
 
-MIN_CLOCKS = 3
+MIN_CLOCKS = 1
 MAX_CLOCKS = 6
 DAY_START = 6
 DAY_END = 18
@@ -117,6 +117,8 @@ class WorldClockPlugin(PluginBase):
                 clocks.append({"name": name, "timezone": tz, "time": time_str, "day": day})
                 lines.append(render_line(name, time_str, day, board.cols))
             lines = lines[: board.rows]
+            if not lines:
+                return PluginResult(available=True, data={"world_clock": "", "clocks": []}, formatted_lines=[])
             return PluginResult(
                 available=True,
                 data={"world_clock": "\n".join(lines), "clocks": clocks},

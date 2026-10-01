@@ -92,7 +92,8 @@ def test_validate_config():
     assert plugin.validate_config({**CONFIG, "timezone_1": ""})
     assert plugin.validate_config({**CONFIG, "time_format": "13h"})
     two = {k: v for k, v in CONFIG.items() if not k.endswith("_3")}
-    assert plugin.validate_config(two)
+    assert not plugin.validate_config(two)
+    assert plugin.validate_config({})
 
 
 def test_fetch_data_flagship_and_note():

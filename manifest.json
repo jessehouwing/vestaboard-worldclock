@@ -2,7 +2,7 @@
   "id": "vestaboard_worldclock",
   "name": "World Clock",
   "version": "1.0.0",
-  "description": "Shows the time in 3 to 6 timezones with a day/night indicator.",
+  "description": "Shows the time in 1 to 6 timezones with a day/night indicator.",
   "live_data": true,
   "author": "Jesse Houwing",
   "icon": "clock",
@@ -13,11 +13,7 @@
     "type": "object",
     "required": [
       "name_1",
-      "timezone_1",
-      "name_2",
-      "timezone_2",
-      "name_3",
-      "timezone_3"
+      "timezone_1"
     ],
     "properties": {
       "time_format": {
@@ -480,13 +476,13 @@
       "name_2": {
         "type": "string",
         "title": "Name 2",
-        "description": "Label for clock 2. Required.",
+        "description": "Label for clock 2. Optional.",
         "maxLength": 16
       },
       "timezone_2": {
         "type": "string",
         "title": "Timezone 2",
-        "description": "Pick a timezone. Required.",
+        "description": "Pick a timezone.",
         "default": "",
         "enum": [
           "",
@@ -927,13 +923,13 @@
       "name_3": {
         "type": "string",
         "title": "Name 3",
-        "description": "Label for clock 3. Required.",
+        "description": "Label for clock 3. Optional.",
         "maxLength": 16
       },
       "timezone_3": {
         "type": "string",
         "title": "Timezone 3",
-        "description": "Pick a timezone. Required.",
+        "description": "Pick a timezone.",
         "default": "",
         "enum": [
           "",
