@@ -1,5 +1,5 @@
 {
-  "id": "world_clock",
+  "id": "vestaboard_worldclock",
   "name": "World Clock",
   "version": "1.0.0",
   "description": "Shows the time in 3 to 6 timezones with a day/night indicator.",

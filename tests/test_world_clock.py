@@ -9,7 +9,7 @@ import pytz
 
 from src.devices import BoardContext
 
-from plugins import world_clock as wc
+from plugins import vestaboard_worldclock as wc
 
 MANIFEST = json.loads((Path(__file__).parent.parent / "manifest.json").read_text())
 
